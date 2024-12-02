@@ -23,6 +23,8 @@ document.getElementById("taskInput").addEventListener("click", function() {
 
 // Сақталған задачаларды шығару
 const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+ID = tasks.length > 0 ? Math.max(...tasks.map(task => task.id)) : 0;
+
 
 // Жаңа задача қосу
 function addTask() {
@@ -54,14 +56,24 @@ function renderTasks() {
     taskList.innerHTML = "";
     tasks.forEach(task => {
         const taskItem = document.createElement("li");
-        taskItem.innerHTML = `
+        if (task.completed) {
+            taskItem.innerHTML = `
+                <input type="checkbox" class="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleComplete(${task.id})">
+                <span class="task-text" style="text-decoration: line-through;">${task.text}</span>
+                <div class="action-buttons">
+                    <button class="edit-btn" onclick="editTask(${task.id})">Редактировать</button>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">Удалить</button>
+                </div>`;
+            
+        } else {
+            taskItem.innerHTML = `
             <input type="checkbox" class="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleComplete(${task.id})">
-            <span class="task-text">${task.text}</span>
-            <div class="action-buttons">
-                <button class="edit-btn" onclick="editTask(${task.id})">Редактировать</button>
-                <button class="delete-btn" onclick="deleteTask(${task.id})">Удалить</button>
-            </div>
-        `;
+                <span class="task-text">${task.text}</span>
+                <div class="action-buttons">
+                    <button class="edit-btn" onclick="editTask(${task.id})">Редактировать</button>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">Удалить</button>
+                </div>`;
+        }
         taskList.appendChild(taskItem);
     });
 }
